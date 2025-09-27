@@ -1,0 +1,39 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "biome check",
+    "format": "biome format --write"
+  },
+  "dependencies": {
+    "@mysten/sui": "^1.38.0",
+    "@mysten/walrus": "^0.7.0",
+    "@rainbow-me/rainbowkit": "^2.2.8",
+    "@selfxyz/core": "^1.1.0-beta.6",
+    "@selfxyz/qrcode": "^1.0.15",
+    "@tanstack/react-query": "^5.90.2",
+    "axios": "^1.12.2",
+    "ethers": "^6.15.0",
+    "framer-motion": "^12.23.22",
+    "lucide-react": "^0.544.0",
+    "next": "15.5.4",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "socket.io-client": "^4.8.1",
+    "viem": "^2.37.8",
+    "wagmi": "^2.17.5"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.0",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
