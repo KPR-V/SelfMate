@@ -45,12 +45,12 @@ interface AppContextType {
   totalUsers: number;
   
   // App state
-  currentView: 'landing' | 'swipe' | 'matches' | 'profile';
+  currentView: 'landing' | 'swipe' | 'matches' | 'profile' | 'create-profile';
   
   // Functions
   connectWallet: () => Promise<void>;
   disconnect: () => void;
-  navigateTo: (view: 'landing' | 'swipe' | 'matches' | 'profile') => void;
+  navigateTo: (view: 'landing' | 'swipe' | 'matches' | 'profile' | 'create-profile') => void;
   refreshUserData: () => Promise<void>;
   updateDisclosedData: (data: DisclosedData) => void;
 }
@@ -62,7 +62,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const { disconnect: wagmiDisconnect } = useDisconnect();
   const [user, setUser] = useState<(UserData & { disclosedData?: DisclosedData }) | null>(null);
   const [totalUsers, setTotalUsers] = useState(0);
-  const [currentView, setCurrentView] = useState<'landing' | 'swipe' | 'matches' | 'profile'>('landing');
+  const [currentView, setCurrentView] = useState<'landing' | 'swipe' | 'matches' | 'profile' | 'create-profile'>('landing');
 
   const updateDisclosedData = (disclosedData: DisclosedData) => {
     console.log('Updating disclosed data:', disclosedData);
@@ -74,10 +74,35 @@ export function AppProvider({ children }: { children: ReactNode }) {
         isVerified: true
       };
     });
-    setCurrentView('swipe');
-  };
+  // Navigate to profile creation instead of directly to swipe
+  setCurrentView('create-profile');
+};
 
-  // Handle wallet connection status changes
+// Check if verified user has completed their profile registration
+const checkProfileCompletion = async (userAddress: string) => {
+  try {
+    console.log('🔍 Checking profile completion for:', userAddress);
+    
+    const response = await fetch(`/api/profile/status?address=${userAddress}`);
+    const result = await response.json();
+    
+    if (result.success) {
+      if (result.needsProfileCreation) {
+        console.log('⚠️ User needs to complete profile registration');
+        setCurrentView('create-profile');
+      } else {
+        console.log('✅ User has completed profile registration');
+        setCurrentView('swipe');
+      }
+    } else {
+      console.error('❌ Failed to check profile status:', result.error);
+      setCurrentView('swipe'); // Default to swipe if check fails
+    }
+  } catch (error) {
+    console.error('❌ Error checking profile completion:', error);
+    setCurrentView('swipe'); // Default to swipe if check fails
+  }
+};  // Handle wallet connection status changes
   useEffect(() => {
     const initializeUser = async () => {
       if (isConnected && address) {
@@ -91,7 +116,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
           selfService.updateUserId(address);
           
           if (isVerified) {
-            setCurrentView('swipe');
+            // Check if verified user has completed profile registration
+            console.log('🔍 Checking profile completion for verified user:', address);
+            await checkProfileCompletion(address);
           } else {
             setCurrentView('landing');
           }
@@ -176,7 +203,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     web3Service.resetContract();
   };
 
-  const navigateTo = (view: 'landing' | 'swipe' | 'matches' | 'profile') => {
+  const navigateTo = (view: 'landing' | 'swipe' | 'matches' | 'profile' | 'create-profile') => {
     setCurrentView(view);
   };
 

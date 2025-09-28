@@ -4,15 +4,24 @@ import LandingPage from '@/components/LandingPage';
 import DiscoverPage from '@/components/DiscoverPage';
 import MatchesPage from '@/components/MatchesPage';
 import ProfilePage from '@/components/ProfilePage';
+import ProfileCreation from '@/components/ProfileCreation';
 
 export default function MainApp() {
-  const { currentView, user } = useApp();
+  const { currentView, user, navigateTo } = useApp();
 
   // Show appropriate view based on current state
   const renderCurrentView = () => {
     switch (currentView) {
       case 'landing':
         return <LandingPage />;
+      
+      case 'create-profile':
+        return (
+          <ProfileCreation 
+            onComplete={() => navigateTo('swipe')}
+            onBack={() => navigateTo('profile')}
+          />
+        );
       
       case 'swipe':
         return <DiscoverPage currentUser={user} />;

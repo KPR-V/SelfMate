@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useApp } from '@/lib/context';
-import { MOCK_CURRENT_USER } from '@/lib/mockData';
+import ContractInfo from './ContractInfo';
+import ProfileCompletionBanner from './ProfileCompletionBanner';
 
 interface ProfilePageProps {}
 
@@ -11,14 +12,17 @@ export default function ProfilePage({}: ProfilePageProps) {
   const { user, disconnect, navigateTo } = useApp();
   const [isEditing, setIsEditing] = useState(false);
   
-  // Use disclosed data from user context, fallback to mock data for demo
+  // Use disclosed data from user context
   const disclosedData = user?.disclosedData;
   const [profile, setProfile] = useState({
-    ...MOCK_CURRENT_USER,
-    // Override with actual disclosed data if available
-    ...(disclosedData?.nationality && { nationality: disclosedData.nationality }),
-    ...(disclosedData?.gender && { gender: disclosedData.gender }),
-    ...(disclosedData?.name && { name: disclosedData.name }),
+    name: disclosedData?.name || 'Anonymous User',
+    nationality: disclosedData?.nationality || 'Unknown',
+    age: disclosedData?.olderThan ? parseInt(disclosedData.olderThan) + 1 : 25,
+    bio: 'Update your profile to tell others about yourself',
+    photos: [] as string[],
+    interests: [] as string[],
+    verified: user?.isVerified || false,
+    gender: disclosedData?.gender || 'Not specified'
   });
 
   const handleSave = () => {
@@ -84,12 +88,14 @@ export default function ProfilePage({}: ProfilePageProps) {
         </div>
       </div>
 
+      {/* Profile Completion Banner */}
+      <ProfileCompletionBanner />
+
       <div className="p-4 max-w-2xl mx-auto space-y-6">
         {/* Profile Photos */}
         <div className="bg-white rounded-xl p-6 shadow-sm">
           <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
             📸 Photos
-            {profile.verified && <span className="text-green-500">✅ Verified</span>}
           </h2>
           
           <div className="grid grid-cols-3 gap-3">
@@ -198,6 +204,7 @@ export default function ProfilePage({}: ProfilePageProps) {
                       {disclosedData.nationality === 'DE' && '🇩🇪'}
                       {disclosedData.nationality === 'CA' && '🇨🇦'}
                       {disclosedData.nationality === 'UK' && '🇬🇧'}
+                      {disclosedData.nationality}
                     </span>
                     <span className="text-gray-800 font-medium">{disclosedData.nationality}</span>
                     <div className="ml-auto">
@@ -296,13 +303,13 @@ export default function ProfilePage({}: ProfilePageProps) {
                 <div className="flex justify-between">
                   <span>Nationality</span>
                   <span className={disclosedData?.nationality ? "text-green-600 font-medium" : "text-gray-400"}>
-                    {disclosedData?.nationality ? "✓ Disclosed" : "🔒 Private"}
+                    {disclosedData?.nationality ? "✓ Disclosed" : "✓ Verified"}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Gender</span>
                   <span className={disclosedData?.gender ? "text-green-600 font-medium" : "text-gray-400"}>
-                    {disclosedData?.gender ? "✓ Disclosed" : "🔒 Private"}
+                    {disclosedData?.gender ? "✓ Disclosed" : "✓ Verified"}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -388,6 +395,9 @@ export default function ProfilePage({}: ProfilePageProps) {
             </button>
           </div>
         </div>
+
+        {/* Contract Information */}
+        <ContractInfo />
 
         {/* Stats */}
         <div className="bg-white rounded-xl p-6 shadow-sm">

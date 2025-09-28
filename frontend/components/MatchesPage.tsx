@@ -10,7 +10,7 @@ interface MatchesPageProps {}
 
 export default function MatchesPage({}: MatchesPageProps) {
   const { navigateTo } = useApp();
-  const [matches] = useState<Match[]>(MOCK_MATCHES);
+  const [matches] = useState<Match[]>([]);
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<any[]>([]);

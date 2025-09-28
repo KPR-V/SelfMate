@@ -5,7 +5,6 @@ export const MOCK_PROFILES = [
     name: 'Sofia',
     age: 25,
     photos: [
-      'https://images.unsplash.com/photo-1494790108755-2616b2e5e5d8?w=400&h=600&fit=crop',
       'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=600&fit=crop'
     ],
     bio: 'Digital nomad exploring the world 🌍 Currently in Bali. Love surfing, coffee, and deep conversations. Looking for someone to share adventures with!',
@@ -17,7 +16,6 @@ export const MOCK_PROFILES = [
     name: 'Elena',
     age: 28,
     photos: [
-      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=600&fit=crop',
       'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=600&fit=crop'
     ],
     bio: 'Photographer and travel writer 📸 Based in Barcelona but always on the move. Fluent in 4 languages. Let\'s explore together!',
@@ -29,7 +27,6 @@ export const MOCK_PROFILES = [
     name: 'Priya',
     age: 26,
     photos: [
-      'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=400&h=600&fit=crop',
       'https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?w=400&h=600&fit=crop'
     ],
     bio: 'Tech entrepreneur and yoga instructor 🧘‍♀️ Building the future while staying mindful. Currently nomading through Southeast Asia.',
@@ -109,7 +106,6 @@ export const MOCK_CURRENT_USER = {
   name: 'Alex',
   age: 27,
   photos: [
-    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop',
     'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=600&fit=crop'
   ],
   bio: 'Full-stack developer and digital nomad 💻 Currently building the future while exploring the world. Love hiking, coding, and meeting fellow travelers!',

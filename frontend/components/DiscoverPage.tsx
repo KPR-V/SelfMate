@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SwipeCard from './SwipeCard';
 import { Profile, useApp } from '@/lib/context';
-import { MOCK_PROFILES } from '@/lib/mockData';
+import ProfileCompletionBanner from './ProfileCompletionBanner';
 
 interface DiscoverPageProps {
   currentUser?: any;
@@ -14,17 +14,47 @@ export default function DiscoverPage({ currentUser }: DiscoverPageProps) {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [likes, setLikes] = useState(0);
   const [passes, setPasses] = useState(0);
   const { navigateTo } = useApp();
   
   useEffect(() => {
-    // Simulate loading profiles
-    setTimeout(() => {
-      setProfiles(MOCK_PROFILES);
-      setLoading(false);
-    }, 1000);
+    fetchVerifiedProfiles();
   }, []);
+
+  const fetchVerifiedProfiles = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      console.log('🔍 Fetching verified profiles from API...');
+      
+      const response = await fetch('/api/profiles/verified');
+      const data = await response.json();
+      
+      if (data.success) {
+        console.log('✅ Successfully fetched verified profiles:', data.profiles.length);
+        setProfiles(data.profiles);
+        
+        if (data.profiles.length === 0) {
+          setError('No profiles with stored data found. Users need to store their profile data to Walrus and register their blob IDs in the IdentityStorage contract.');
+        }
+      } else {
+        console.error('❌ Failed to fetch profiles:', data.error);
+        setError(data.error || 'Failed to load verified profiles');
+      }
+    } catch (err: any) {
+      console.error('❌ Error fetching verified profiles:', err);
+      setError('Network error. Please check your connection and try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRefresh = () => {
+    fetchVerifiedProfiles();
+  };
 
   const handleSwipeLeft = () => {
     setPasses(p => p + 1);
@@ -72,7 +102,48 @@ export default function DiscoverPage({ currentUser }: DiscoverPageProps) {
       <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="animate-spin text-4xl">❤️</div>
-          <p className="text-gray-600">Finding amazing people near you...</p>
+          <p className="text-gray-600">Loading verified profiles...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 flex items-center justify-center px-4">
+        <div className="text-center space-y-6 max-w-md">
+          <div className="text-6xl">😕</div>
+          <h2 className="text-2xl font-bold text-gray-800">Oops!</h2>
+          <p className="text-gray-600">{error}</p>
+          <button
+            onClick={handleRefresh}
+            className="bg-pink-500 text-white px-6 py-3 rounded-full hover:bg-pink-600 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (profiles.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 flex items-center justify-center px-4">
+        <div className="text-center space-y-6 max-w-md">
+          <div className="text-6xl">🌟</div>
+          <h2 className="text-2xl font-bold text-gray-800">No Profiles Yet</h2>
+          <p className="text-gray-600">
+            No verified profiles with stored data found. Users need to:
+            <br />• Complete verification through the contract
+            <br />• Store profile data to Walrus 
+            <br />• Register blob IDs in IdentityStorage contract
+          </p>
+          <button
+            onClick={handleRefresh}
+            className="bg-pink-500 text-white px-6 py-3 rounded-full hover:bg-pink-600 transition-colors"
+          >
+            Check Again
+          </button>
         </div>
       </div>
     );
@@ -85,7 +156,7 @@ export default function DiscoverPage({ currentUser }: DiscoverPageProps) {
           <div className="text-6xl">🎉</div>
           <h2 className="text-3xl font-bold text-gray-800">You're all caught up!</h2>
           <p className="text-gray-600">
-            You've seen everyone in your area. Check back later for new profiles!
+            You've seen all verified profiles. Check back later for new profiles!
           </p>
           <div className="bg-white rounded-lg p-4 shadow-sm">
             <div className="flex justify-between text-sm">
@@ -93,16 +164,24 @@ export default function DiscoverPage({ currentUser }: DiscoverPageProps) {
               <span className="text-gray-500">👋 Passes: {passes}</span>
             </div>
           </div>
-          <button
-            onClick={() => {
-              setCurrentIndex(0);
-              setPasses(0);
-              setLikes(0);
-            }}
-            className="bg-pink-500 text-white px-6 py-3 rounded-full hover:bg-pink-600 transition-colors"
-          >
-            Start Over
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => {
+                setCurrentIndex(0);
+                setPasses(0);
+                setLikes(0);
+              }}
+              className="bg-gray-500 text-white px-6 py-3 rounded-full hover:bg-gray-600 transition-colors"
+            >
+              Review Again
+            </button>
+            <button
+              onClick={handleRefresh}
+              className="bg-pink-500 text-white px-6 py-3 rounded-full hover:bg-pink-600 transition-colors"
+            >
+              Refresh Profiles
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -141,6 +220,11 @@ export default function DiscoverPage({ currentUser }: DiscoverPageProps) {
             </div>
           </div>
         </div>
+      </div>
+      
+      {/* Profile Completion Banner */}
+      <div className="absolute top-20 left-0 right-0 z-30 px-4">
+        <ProfileCompletionBanner />
       </div>
       
       {/* Cards Container */}
